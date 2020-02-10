@@ -22,6 +22,16 @@ resource "aws_security_group" "lb_sg" {
   }
 }
 
+resource "aws_security_group_rule" "https" {
+  count       = var.enable_https
+  type        = "ingress"
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+
+  security_group_id = aws_security_group.lb_sg.id
+}
 # ---------------------------------------------------------------------------------------------------------------------
 # AWS LOAD BALANCER
 # ---------------------------------------------------------------------------------------------------------------------
@@ -42,12 +52,12 @@ resource "aws_lb" "lb" {
 # AWS LOAD BALANCER - Target Group
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_lb_target_group" "lb_tg" {
-  depends_on  = [aws_lb.lb]
-  name        = "${var.name_preffix}-lb-tg"
-  target_type = "ip"
-  protocol    = "HTTP"
-  port        = var.container_port
-  vpc_id      = var.vpc_id
+  depends_on           = [aws_lb.lb]
+  name                 = "${var.name_preffix}-lb-tg"
+  target_type          = "ip"
+  protocol             = "HTTP"
+  port                 = var.container_port
+  vpc_id               = var.vpc_id
   deregistration_delay = 0
   health_check {
     path = var.health_check_path
@@ -72,3 +82,18 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
+resource "aws_lb_listener" "listener_https" {
+  count = var.enable_https
+
+  depends_on        = [aws_lb_target_group.lb_tg]
+  load_balancer_arn = aws_lb.lb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.lb_tg.arn
+  }
+}

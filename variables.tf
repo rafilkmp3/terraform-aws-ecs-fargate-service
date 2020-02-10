@@ -122,4 +122,13 @@ variable "assign_public_ip" {
   type        = bool
   default     = false
 }
+variable "enable_https" {
+  description = "(Optional) Assign a public IP address to the ENI (Fargate launch type only). Valid values are true or false. Default false."
+  type        = bool
+  default     = false
+}
 
+variable "certificate_arn" {
+  description = "(Optional) ARN of certificate to be used on https listener"
+  default     = ""
+}
