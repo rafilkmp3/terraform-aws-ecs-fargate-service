@@ -23,7 +23,7 @@ resource "aws_security_group" "lb_sg" {
 }
 
 resource "aws_security_group_rule" "https" {
-  count       = "${var.enable_https == true ? 1 : 0}"
+  count       = var.enable_https == true ? 1 : 0
   type        = "ingress"
   from_port   = 443
   to_port     = 443
@@ -84,7 +84,7 @@ resource "aws_lb_listener" "listener" {
 
 resource "aws_lb_listener" "listener_https" {
 
-  count             = "${var.enable_https == true ? 1 : 0}"
+  count             = var.enable_https == true ? 1 : 0
   depends_on        = [aws_lb_target_group.lb_tg]
   load_balancer_arn = aws_lb.lb.arn
   port              = "443"
