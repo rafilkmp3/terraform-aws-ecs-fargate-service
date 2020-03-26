@@ -2,17 +2,22 @@
 
 This Terraform module deploys an AWS ECS Fargate service.
 
-[![CircleCI](https://circleci.com/gh/jnonino/terraform-aws-ecs-fargate-service/tree/master.svg?style=svg)](https://circleci.com/gh/jnonino/terraform-aws-ecs-fargate-service/tree/master)
+[![CircleCI](https://circleci.com/gh/cn-terraform/terraform-aws-ecs-fargate-service/tree/master.svg?style=svg)](https://circleci.com/gh/cn-terraform/terraform-aws-ecs-fargate-service/tree/master)
+[![](https://img.shields.io/github/license/cn-terraform/terraform-aws-ecs-fargate-service)](https://github.com/cn-terraform/terraform-aws-ecs-fargate-service)
+[![](https://img.shields.io/github/issues/cn-terraform/terraform-aws-ecs-fargate-service)](https://github.com/cn-terraform/terraform-aws-ecs-fargate-service)
+[![](https://img.shields.io/github/issues-closed/cn-terraform/terraform-aws-ecs-fargate-service)](https://github.com/cn-terraform/terraform-aws-ecs-fargate-service)
+[![](https://img.shields.io/github/languages/code-size/cn-terraform/terraform-aws-ecs-fargate-service)](https://github.com/cn-terraform/terraform-aws-ecs-fargate-service)
+[![](https://img.shields.io/github/repo-size/cn-terraform/terraform-aws-ecs-fargate-service)](https://github.com/cn-terraform/terraform-aws-ecs-fargate-service)
 
 ## Usage
 
 Check valid versions on:
-* Github Releases: <https://github.com/jnonino/terraform-aws-ecs-fargate-service/releases>
-* Terraform Module Registry: <https://registry.terraform.io/modules/jnonino/ecs-fargate-service/aws>
+* Github Releases: <https://github.com/cn-terraform/terraform-aws-ecs-fargate-service/releases>
+* Terraform Module Registry: <https://registry.terraform.io/modules/cn-terraform/ecs-fargate-service/aws>
 
-        module "ecs-fargate-service": 
-            source              = "jnonino/ecs-fargate-service/aws"
-            version             = "1.0.0"
+        module "ecs-fargate-service" {
+            source              = "cn-terraform/ecs-fargate-service/aws"
+            version             = "1.0.10"
             name_preffix        = var.name_preffix
             profile             = var.profile
             region              = var.region
@@ -21,7 +26,8 @@ Check valid versions on:
             container_port      = module.td.container_port
             ecs_cluster_name    = module.ecs-cluster.aws_ecs_cluster_cluster_name
             ecs_cluster_arn     = module.ecs-cluster.aws_ecs_cluster_cluster_arn
-            subnets             = module.networking.private_subnets_ids
+            private_subnets     = module.networking.private_subnets_ids
+            public_subnets      = module.networking.public_subnets_ids
         }
 
 Check the section "Other modules that you may need to use this module" for details about modules mentioned in the usage example.
@@ -46,10 +52,13 @@ Check the section "Other modules that you may need to use this module" for detai
 * propagate_tags: (Optional) Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are SERVICE and TASK_DEFINITION. Default to SERVICE.
 * ordered_placement_strategy: (Optional) Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. The maximum number of ordered_placement_strategy blocks is 5. This is a list of maps where each map should contain "id" and "field".
 * health_check_grace_period_seconds: (Optional) Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 2147483647. Only valid for services configured to use load balancers.
+* health_check_path: (Optional) The destination for the health check request.
 * placement_constraints: (Optional) rules that are taken into consideration during task placement. Maximum number of placement_constraints is 10. This is a list of maps, where each map should contain "type" and "expression".
 * service_registries: (Optional) The service discovery registries for the service. The maximum number of service_registries blocks is 1. This is a map that should contain the following fields "registry_arn", "port", "container_port" and "container_name".
 * security_groups: (Optional) The security groups associated with the task or service. If you do not specify a security group, the default security group for the VPC is used.
 * assign_public_ip: (Optional) Assign a public IP address to the ENI (Fargate launch type only). Valid values are true or false. Default false.
+* lb_health_check_path: (Optional) Health check path for the Load Balancer
+* internal_lb: (Optional) Sets ECS service load balancer to internal and disables ECS service public ip assignment. Default false
 
 ## Output values
 
@@ -76,7 +85,7 @@ Check the section "Other modules that you may need to use this module" for detai
 The networking module should look like this:
 
         module "networking" {
-    		source          = "jnonino/networking/aws"
+    		    source          = "cn-terraform/networking/aws"
             version         = "2.0.3"
             name_preffix    = var.name_preffix
             profile         = var.profile
@@ -88,27 +97,27 @@ The networking module should look like this:
     	}
 
 Check versions for this module on:
-* Github Releases: <https://github.com/jnonino/terraform-aws-networking/releases>
-* Terraform Module Registry: <https://registry.terraform.io/modules/jnonino/networking/aws>
+* Github Releases: <https://github.com/cn-terraform/terraform-aws-networking/releases>
+* Terraform Module Registry: <https://registry.terraform.io/modules/cn-terraform/networking/aws>
 
 The ECS cluster module should look like this:
 
-        module "ecs-cluster": 
-            source       = "jnonino/ecs-cluster/aws"
-            version      = "1.0.1"
+        module "ecs-cluster" {
+            source       = "cn-terraform/ecs-cluster/aws"
+            version      = "1.0.2"
             name_preffix = var.name_preffix
             profile      = var.profile
             region       = var.region
         }
 
 Check versions for this module on:
-* Github Releases: <https://github.com/jnonino/terraform-aws-ecs-cluster/releases>
-* Terraform Module Registry: <https://registry.terraform.io/modules/jnonino/ecs-cluster/aws>
+* Github Releases: <https://github.com/cn-terraform/terraform-aws-ecs-cluster/releases>
+* Terraform Module Registry: <https://registry.terraform.io/modules/cn-terraform/ecs-cluster/aws>
 
 The task definition module should like this:
 
         module "td" {
-    	    source          = "jnonino/ecs-fargate-task-definition/aws"
+    	      source          = "cn-terraform/ecs-fargate-task-definition/aws"
             version         = "1.0.1"
             name_preffix    = var.name_preffix
             profile         = var.profile
@@ -119,6 +128,6 @@ The task definition module should like this:
     	}
 
 Check versions for this module on:
-* Github Releases: <https://github.com/jnonino/terraform-aws-ecs-fargate-task-definition/releases>
-* Terraform Module Registry: <https://registry.terraform.io/modules/jnonino/ecs-fargate-task-definition/aws>
+* Github Releases: <https://github.com/cn-terraform/terraform-aws-ecs-fargate-task-definition/releases>
+* Terraform Module Registry: <https://registry.terraform.io/modules/cn-terraform/ecs-fargate-task-definition/aws>
 
