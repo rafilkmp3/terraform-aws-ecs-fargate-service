@@ -38,8 +38,13 @@ variable "ecs_cluster_arn" {
   description = "ARN of an ECS cluster"
 }
 
-variable "subnets" {
-  description = "The subnets associated with the task or service."
+variable "private_subnets" {
+  description = "The private subnets associated with the task or service."
+  type        = list
+}
+
+variable "public_subnets" {
+  description = "The public subnets associated with the task or service."
   type        = list
 }
 
@@ -71,12 +76,13 @@ variable "deployment_maximum_percent" {
 variable "deployment_minimum_healthy_percent" {
   description = "(Optional) The lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment."
   type        = number
-  default     = 50
+  default     = 100
 }
 
 variable "enable_ecs_managed_tags" {
-  description = "(Optional) Specifies whether to enable Amazon ECS managed tags for the tasks within the service."
-  default     = ""
+  description = "(Optional) Specifies whether to enable Amazon ECS managed tags for the tasks within the service.Valid values are true or false. Default false."
+  type        = bool
+  default     = false
 }
 
 variable "propagate_tags" {
@@ -127,6 +133,17 @@ variable "enable_https" {
   type        = bool
   default     = false
 }
+
+variable "lb_health_check_path" {
+  description = "(Optional) Health check path for the Load Balancer"
+  type        = string
+  default     = "/"
+}
+
+variable "internal_lb" {
+  description = "(Optional) Sets ECS service load balancer to internal and disables ECS service public ip assignment. Default false"
+  type        = bool
+  default     = false
 
 variable "certificate_arn" {
   description = "(Optional) ARN of certificate to be used on https listener"
