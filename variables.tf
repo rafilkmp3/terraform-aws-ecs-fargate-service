@@ -129,7 +129,7 @@ variable "assign_public_ip" {
   default     = false
 }
 variable "enable_https" {
-  description = "(Optional) Assign a public IP address to the ENI (Fargate launch type only). Valid values are true or false. Default false."
+  description = "(Optional) Enable Https Listener on LB ( When this is enabled you need the Certificate ARN on ACM. Default false."
   type        = bool
   default     = false
 }
