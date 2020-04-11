@@ -142,8 +142,9 @@ variable "lb_health_check_path" {
 
 variable "internal_lb" {
   description = "(Optional) Sets ECS service load balancer to internal and disables ECS service public ip assignment. Default false"
-  type        = bool
-  default     = false
+  type = bool
+  default = false
+}
 
 variable "certificate_arn" {
   description = "(Optional) ARN of certificate to be used on https listener"
